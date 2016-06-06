@@ -114,6 +114,7 @@ public class OneTimeCredentials extends JSONable {
     public OneTimeCredentials(CipherSpec cipher, Random randomness) {
         this(OneTimeCredentials.getRandom(cipher.key, randomness), OneTimeCredentials.getRandom(cipher.block, randomness), cipher);
     }//OneTimeCredentials(CipherSpec, Random)*/
+
     /**
      *  Constructor - reads in from JSON.
      *
@@ -122,6 +123,12 @@ public class OneTimeCredentials extends JSONable {
     public OneTimeCredentials(String json) {
         this(Encryptable.unJSON(json));
     }//OneTimeCredentials(String)*/
+
+    /**
+     *  Constructor.  Unpacks a Json Object.
+     *
+     *  @param obj The Json Object.
+     */
     public OneTimeCredentials(JsonObject obj) {
         this(
             obj.getString("key")
@@ -135,7 +142,7 @@ public class OneTimeCredentials extends JSONable {
                 :
                 null
         );
-    }
+    }//OneTimeCredentials(JsonObject)*/
 
     /**
      *  Get get random bits. Gets at most the passed number of bits of randomness.
@@ -198,7 +205,6 @@ public class OneTimeCredentials extends JSONable {
         return new IvParameterSpec(this.iv.clone());
     }//getIV()*/
 
-
     /**
      *  Turn this object into JSON.
      *
@@ -214,7 +220,7 @@ public class OneTimeCredentials extends JSONable {
             ;
         if (this.hash != null)
             g.write("hash", this.hash.toString());
-    }
+    }//jsonHelper(JsonGenerator)*/
 
     /**
      *  Bytes to base64.
@@ -237,6 +243,4 @@ public class OneTimeCredentials extends JSONable {
     public static byte[] fromBase64(String base64) {
         return DatatypeConverter.parseBase64Binary(base64);
     }//fromBase64(String)*/
-
-
 }//OneTimeCredentials*/

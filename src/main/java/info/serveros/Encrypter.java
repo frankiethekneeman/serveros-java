@@ -31,7 +31,7 @@ import javax.json.stream.JsonGenerator;
  *
  *  @author Francis J.. Van Wetering IV
  */
-public class Encrypter {
+public abstract class Encrypter {
 
     /**
      * The delimiter used in Cryptexts.
@@ -133,6 +133,16 @@ public class Encrypter {
         return OneTimeCredentials.toBase64(c.doFinal(message.getBytes()));
     }//encipher(String, OneTimeCredentials)*/
 
+    /**
+     *  Encippher an Object to a base64 String.
+     *
+     *  @param message An object (which will be coerced to String)
+     *  @param credentials The credentials to encipher the message with.
+     *
+     *  @return the bas264 encoded bytes of the enciphered mesage.
+     *
+     *  @throws GeneralSecurityException if an error is encountered enciphering.
+     */
     public String encipher(Object message, OneTimeCredentials credentials)
                 throws java.security.GeneralSecurityException
             {
@@ -325,26 +335,59 @@ public class Encrypter {
         return decrypted;
     }//decryptAndVerify(Key, PublicKey, CryptoMessage)*/
 
+    /**
+     *  An encrypted message, with some information about how to unpack it.
+     */
     public static class CryptoMessage extends JSONable {
+
+        /**
+         *  The encrypted Message, as a Base64 String.
+         */
         public final String message;
+
+        /**
+         *  The Signature, as a Base64 String.
+         */
         public final String signature;
+
+        /**
+         *  The Hash used to Sign the message.
+         */
         public final HashSpec hash;
+
+        /**
+         *  Constructor.
+         *
+         *  @param message the encrypted message, as a base64 string.
+         *  @param signature the signature, as a base64 string
+         *  @param hash The Hash Algorithm used to sign the message.
+         */
         public CryptoMessage(String message, String signature, HashSpec hash) {
             this.message = message;
             this.signature = signature;
             this.hash = hash;
-        }
+        }//CryptoMessage(String, String, HashSpec)*/
 
+        /**
+         *  Constructor. Unpacks a JSON object.
+         *
+         *  @param o
+         */
         public CryptoMessage(JsonObject o) {
             this(o.getString("message")
                 , o.getString("signature")
-                , o.get("hash") == null ? null : HashSpec.fromString(o.getString("hash"))
+                , o.containsKey("hash") ? HashSpec.fromString(o.getString("hash")) : null
             );
-        }
+        }//CryptoMessage(JsonObject)*/
 
+        /**
+         *  Constructor.  Unpacks a Json Encoded String.
+         *
+         *  @param s The Json Encoded CrpytoMessage.
+         */
         public CryptoMessage(String s) {
             this(JSONable.unJSON(s));
-        }
+        }//CryptoMessage(String)*/
 
         /**
          *  Turn this object into JSON.
@@ -359,35 +402,9 @@ public class Encrypter {
                 g.write("hash", this.hash.toString());
         }//toJSON(JsonGenerator, String)*/
 
-    }
+    }//CryptoMessage*/
 
     public static void main(String[] args) throws Exception{
-        Encrypter e = new Encrypter();/*new CipherSpec[]{CipherSpec.aes_256_cbc, CipherSpec.camellia_192_ecb}//, null);/*
-            , new HashSpec[]{HashSpec.sha256, HashSpec.sha224, HashSpec.md5});//*/
-/*
-
-        for (HashSpec h: e.hashPrefs) {
-            System.out.println(h.toString());
-        }
-        System.out.println();
-
-        for (CipherSpec c: e.cipherPrefs) {
-            System.out.println(c.toString());
-        }
-        System.out.println();
-
-        KeyFactory f = KeyFactory.getInstance("RSA");
-        PublicKey pub = getX509PublicKey("../serveros/demo/keys/master.pem8");
-        PrivateKey priv = getPKCS8PrivateKey("../serveros/demo/keys/master.pkcs8");
-
-        for (int i = 0; i < 10; i++) {
-
-            CryptoMessage m = e.encryptAndSign(pub, priv, "MESSAGE", CipherSpec.aes_256_cbc, HashSpec.md5);
-            System.out.println("MESSAGE");
-            System.out.println("ENCRYPTED:" + m.message);
-            System.out.println("DECRYPTED: " + e.decryptAndVerify(priv, pub, m));
-            System.out.println();
-        }*/
         JsonObject ids = JSONable.unJSON("{\"me\":\"Application A\", \"them\": \"Application B\"}");
         ServerosConsumer c = new ServerosConsumer(ids.getJsonString("me")
             , "127.0.0.1:3500"
@@ -400,10 +417,6 @@ public class Encrypter {
             , getPKCS8PrivateKey("../serveros/demo/keys/serverB.pkcs8")
             , null, null
         );
-        TicketPresentation tp = c.getTicketPresentation(ids.getJsonString("them"));
-        System.out.println(p.getEncipheredAck(tp));
-        System.out.println(p.getCredentials(tp));
-
     }
 
     /**
@@ -464,4 +477,4 @@ public class Encrypter {
         in.close();
         return OneTimeCredentials.fromBase64(sb.toString());
     }//getKeyData(String)*/
-}
+}//Encrypter*/

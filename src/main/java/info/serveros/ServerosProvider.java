@@ -82,14 +82,24 @@ public class ServerosProvider extends Encrypter {
         return new Ticket(this.decryptAndVerify(this.myPrivateKey, this.masterPublicKey, p.ticket));
     }//getTicket(TicketPresentation)*/
 
+    /**
+     *  Get a TicketId out of the TicketPresentation.
+     *
+     *  @param p The Ticket data presented by the consumer.
+     *  @param ticket The ticket, having already been decrypted and Verified.
+     */
     private TicketId getId(TicketPresentation p, Ticket ticket)
                 throws java.security.GeneralSecurityException
             {
         return new TicketId(this.decipher(p.id, ticket.oneTimeCredentials));
-    }
+    }//getId(TicketPresentation, Ticket)*/
 
     /**
      *  Get an Ack response to the TicketPresentation.
+     *
+     *  @param p the presented ticket information.
+     *
+     *  @return a message, ready to return to the consumer.
      *
      *  @throws NonceMismatchException If one of the nonces does not match.
      *  @throws StaleRequestException If the Ticket is stale.
@@ -116,29 +126,79 @@ public class ServerosProvider extends Encrypter {
             , ticket.oneTimeCredentials.cipher
             , ticket.oneTimeCredentials.hash
         )));
-    }
+    }//getEncipheredAck(TicketPresentation p)*/
 
+    /**
+     *  Get an Ack response to the TicketPresentation.
+     *
+     *  @param id The encrypted ticketId, base64 encoded.
+     *  @param message The encrypted ticket.
+     *  @param signature the signature for the encrypted ticket.
+     *
+     *  @return a message, ready to return to the consumer.
+     *
+     *  @throws NonceMismatchException If one of the nonces does not match.
+     *  @throws StaleRequestException If the Ticket is stale.
+     *  @throws GeneralSecurityException if something goes wrong with Decryption.
+     *  @throws VerificationException If the signature is messy.
+     */
     public EncipheredAck getEncipheredAck(String id, String message, String signature)
                 throws java.security.GeneralSecurityException
                     , MessageException
             {
         return this.getEncipheredAck(new TicketPresentation(id, new CryptoMessage(message, signature, null)));
-    }
+    }//getEncipheredAck(String, String, String)*/
 
+    /**
+     *  Get an Ack response to the TicketPresentation.
+     *
+     *  @param ticketPresentation the JSON ticketPresentation.
+     *
+     *  @return a message, ready to return to the consumer.
+     *
+     *  @throws NonceMismatchException If one of the nonces does not match.
+     *  @throws StaleRequestException If the Ticket is stale.
+     *  @throws GeneralSecurityException if something goes wrong with Decryption.
+     *  @throws VerificationException If the signature is messy.
+     */
     public EncipheredAck getEncipheredAck(String ticketPresentation)
                 throws java.security.GeneralSecurityException
                     , MessageException
             {
         return this.getEncipheredAck(new TicketPresentation(ticketPresentation));
-    }
+    }//getEncipheredAck(String)*/
 
+    /**
+     *  Get an Ack response to the TicketPresentation.
+     *
+     *  @param ticketPresentation the JSON ticketPresentation.
+     *
+     *  @return a message, ready to return to the consumer.
+     *
+     *  @throws NonceMismatchException If one of the nonces does not match.
+     *  @throws StaleRequestException If the Ticket is stale.
+     *  @throws GeneralSecurityException if something goes wrong with Decryption.
+     *  @throws VerificationException If the signature is messy.
+     */
     public EncipheredAck getEncipheredAck(JsonObject ticketPresentation)
                 throws java.security.GeneralSecurityException
                     , MessageException
             {
         return this.getEncipheredAck(new TicketPresentation(ticketPresentation));
-    }
+    }//getEncipheredAck(JsonObject)*/
 
+    /**
+     *  Extract credentials from the ticket.
+     *
+     *  @param p The presented Ticket information.
+     *
+     *  @return The Credentials issued by the Authentication Master.
+     *
+     *  @throws NonceMismatchException If one of the nonces does not match.
+     *  @throws StaleRequestException If the Ticket is stale.
+     *  @throws GeneralSecurityException if something goes wrong with Decryption.
+     *  @throws VerificationException If the signature is messy.
+     */
     public Credentials getCredentials(TicketPresentation p)
                 throws java.security.GeneralSecurityException
                     , MessageException
@@ -155,5 +215,64 @@ public class ServerosProvider extends Encrypter {
             , ticket.getExpiry()
             , ticket.authData
         );
-    }
-}
+    }//getCredentials(TicketPresentation)*/
+
+    /**
+     *  Extract credentials from the ticket.
+     *
+     *  @param id The encrypted ticketId, base64 encoded.
+     *  @param message The encrypted ticket.
+     *  @param signature the signature for the encrypted ticket.
+     *
+     *  @return The Credentials issued by the Authentication Master.
+     *
+     *  @throws NonceMismatchException If one of the nonces does not match.
+     *  @throws StaleRequestException If the Ticket is stale.
+     *  @throws GeneralSecurityException if something goes wrong with Decryption.
+     *  @throws VerificationException If the signature is messy.
+     */
+    public Credentials getCredentials(String id, String message, String signature)
+                throws java.security.GeneralSecurityException
+                    , MessageException
+            {
+        return this.getCredentials(new TicketPresentation(id, new CryptoMessage(message, signature, null)));
+    }//getCredentials(String, String, String)*/
+
+    /**
+     *  Extract Credentials from the ticket.
+     *
+     *  @param ticketPresentation the JSON ticketPresentation.
+     *
+     *  @return The Credentials issued by the Authentication Master.
+     *
+     *  @throws NonceMismatchException If one of the nonces does not match.
+     *  @throws StaleRequestException If the Ticket is stale.
+     *  @throws GeneralSecurityException if something goes wrong with Decryption.
+     *  @throws VerificationException If the signature is messy.
+     */
+    public Credentials getCredentials(String ticketPresentation)
+                throws java.security.GeneralSecurityException
+                    , MessageException
+            {
+        return this.getCredentials(new TicketPresentation(ticketPresentation));
+    }//getCredentials(String)*/
+
+    /**
+     *  Extract credentials from the ticket.
+     *
+     *  @param Credentials the JSON ticketPresentation.
+     *
+     *  @return The Credentials issued by the Authentication Master.
+     *
+     *  @throws NonceMismatchException If one of the nonces does not match.
+     *  @throws StaleRequestException If the Ticket is stale.
+     *  @throws GeneralSecurityException if something goes wrong with Decryption.
+     *  @throws VerificationException If the signature is messy.
+     */
+    public Credentials getCredentials(JsonObject ticketPresentation)
+                throws java.security.GeneralSecurityException
+                    , MessageException
+            {
+        return this.getCredentials(new TicketPresentation(ticketPresentation));
+    }//getCredentials(JsonObject)*/
+}//ServerosProvider*/

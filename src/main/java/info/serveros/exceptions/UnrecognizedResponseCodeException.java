@@ -9,26 +9,26 @@ import javax.json.stream.JsonGenerator;
 public class UnrecognizedResponseCodeException extends MessageException {
 
     /**
-     *  The timestamp on the request.
+     *  The unrecognized code.
      */
-    public final short code;
+    public final int code;
 
     /**
      *  Constructor.
      *
-     *  @param ts The timestamp on the request.
+     *  @param code the unrecognized code.
      */
-    public UnrecognizedResponseCodeException(short code) {
+    public UnrecognizedResponseCodeException(int code) {
         this(code, null);
     }//UnrecognizedResponseCodeException(Date)*/
 
     /**
      *  Constructor.
      *
-     *  @param ts The tiemstamp on the request.
+     *  @param code the unrecognized code.
      *  @param cause The underlying exception.
      */
-    public UnrecognizedResponseCodeException(short code, Throwable cause) {
+    public UnrecognizedResponseCodeException(int code, Throwable cause) {
         super("An unrecognized Response Code was encountered.", cause);
         this.code = code;
     }//UnrecognizedResponseCodeException(Date, Throwable)*/
